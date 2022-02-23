@@ -4,6 +4,7 @@ import './style.css'
 
 import * as THREE from "three";
 import * as dat from "lil-gui";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import { AlphaFormat } from 'three';
 import { Mesh } from 'three';
 import { DirectionalLight } from 'three';
@@ -62,9 +63,18 @@ gui.add(material, "metalness").min(0).max(1).step(0.001);
 gui.add(material, "roughness").min(0).max(1).step(0.001);
 
 //メッシュ
-const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(1, 0.4, 16, 60), material);
+const makaron = new GLTFLoader();
+makaron.load("./blender3D/makaron_nomaterial3.gltf", function(gltf){
+  scene.add(gltf.scene);
+},undefined, function(error){
+  console.error(error);
+});
+//window.console.log(makaron);
+//色が出ないのはblenderのマテリアル作成を失敗している可能性が高い
+
+const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.35, 32, 32), material);
 const mesh2 = new THREE.Mesh(new THREE.OctahedronGeometry(), material);
-const mesh3 = new THREE.Mesh(new THREE.TorusKnotGeometry(0.8, 0.35, 100, 16 ), material);
+const mesh3 = new THREE.Mesh(new THREE.TorusKnotGeometry(0.8, 0.35, 100, 32 ), material);
 const mesh4 = new THREE.Mesh(new THREE.IcosahedronGeometry(), material);
 
 //ジオメトリ配置、回転
@@ -73,7 +83,7 @@ mesh2.position.set(-1, 0, 0);
 mesh3.position.set(2, 0, -6);
 mesh4.position.set(5, 0, 3);
 
-scene.add(mesh1, mesh2, mesh3, mesh4);
+//scene.add(mesh1, mesh2, mesh3, mesh4);
 const meshes = [mesh1, mesh2, mesh3, mesh4];
 
 //パーティクル
@@ -81,16 +91,24 @@ const particlesGeometry = new THREE.BufferGeometry();
 const particlesCount = 700;
 
 const positionArray = new Float32Array(particlesCount * 3);
+//色を配列にする
+const colorArray = new Float32Array(particlesCount * 3);
 
 for(let i = 0; i < particlesCount * 3; i++){
   positionArray[i] = (Math.random() - 0.5) * 10;
 };
+//色をランダムにする
+for(let i = 0; i < particlesCount * 3; i++){
+  colorArray[i] = Math.random();
+};
 
 particlesGeometry.setAttribute("position", new THREE.BufferAttribute(positionArray, 3));
 
+particlesGeometry.setAttribute("color", new THREE.BufferAttribute(colorArray, 3));
+
 const particlesMaterial = new THREE.PointsMaterial({
-  size: 0.025,
-  color: "#ffffff",
+  size: 0.03,
+  vertexColors: true,
 });
 
 const particles = new THREE.Points(particlesGeometry, particlesMaterial);
@@ -148,13 +166,13 @@ rot ();
 const cursor = {};
 cursor.x = 0;
 cursor.y = 0;
-console.log(cursor);
+//console.log(cursor);
 
 window.addEventListener("mousemove", (Event) => {
   //正規化
   cursor.x = Event.clientX / sizes.width - 0.5;
   cursor.y = Event.clientY / sizes.height - 0.5;
-  console.log(cursor);
+  //console.log(cursor);
 });
 
 //アニメーション

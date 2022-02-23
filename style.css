@@ -9,14 +9,15 @@
 html {
   /* background-color: #5e5768; */
   /*背景*/
-  background-image: url("./images/bg.jpg");
+  background-image: url("./images/shop.jpg");
   background-size: cover;
+
 }
 
 body {
   overflow: hidden;
   /*背景のぼかし*/
-  backdrop-filter: blur(25px);
+  backdrop-filter: blur(10px);
 }
 
 .Webgl {
